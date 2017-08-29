@@ -32,6 +32,7 @@ class LiveProvider extends Component {
 
   static propTypes = {
     className: PropTypes.string,
+    staticCode: PropTypes.string,
     code: PropTypes.string,
     scope: PropTypes.object,
     mountStylesheet: PropTypes.bool,
@@ -48,7 +49,7 @@ class LiveProvider extends Component {
     this.setState({ error: error.toString() })
   }
 
-  transpile = ({ code, scope, transformCode, noInline = false }) => {
+  transpile = ({ code, scope, transformCode, staticCode = false, noInline = false }) => {
     // Transpilation arguments
     const input = {
       code: transformCode ? transformCode(code) : code,
@@ -77,6 +78,7 @@ class LiveProvider extends Component {
   getChildContext = () => ({
     live: {
       ...this.state,
+      staticCode: this.props.staticCode,
       code: this.props.code,
       onError: this.onError,
       onChange: this.onChange
@@ -84,12 +86,12 @@ class LiveProvider extends Component {
   })
 
   componentWillMount() {
-    const { code, scope, transformCode, noInline } = this.props
+    const { staticCode, code, scope, transformCode, noInline } = this.props
 
-    this.transpile({ code, scope, transformCode, noInline })
+    this.transpile({ staticCode, code, scope, transformCode, noInline })
   }
 
-  componentWillReceiveProps({ code, scope, noInline, transformCode }) {
+  componentWillReceiveProps({ staticCode, code, scope, noInline, transformCode }) {
     if (
       code !== this.props.code ||
       scope !== this.props.scope ||
@@ -107,6 +109,7 @@ class LiveProvider extends Component {
       code,
       mountStylesheet,
       noInline,
+      staticCode,
       transformCode,
       ...rest
     } = this.props

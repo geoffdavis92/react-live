@@ -6,6 +6,7 @@ import Editor from '../Editor'
 const LiveEditor = (props, { live }) => (
   <Editor
     {...props}
+    staticCode={live.staticCode}
     code={live.code}
     onChange={code => {
       live.onChange(code)

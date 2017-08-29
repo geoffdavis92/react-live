@@ -9,6 +9,10 @@ import {
   LivePreview
 } from '../src/index'
 
+const staticCode= (`
+import React, { Component } from 'react'
+`).trim()
+
 const code = (`
 <strong>
   Hello World!
@@ -27,4 +31,14 @@ storiesOf('Live', module)
       <LiveError />
       <LivePreview />
     </LiveProvider>
-  ));
+  )).add('with static code', () => (
+    <LiveProvider
+      staticCode={staticCode}
+      code={code}
+      noInline={boolean('No inline evaluation', false)}
+    >
+      <LiveEditor />
+      <LiveError />
+      <LivePreview />
+    </LiveProvider>
+  ))

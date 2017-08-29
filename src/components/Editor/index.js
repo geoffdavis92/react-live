@@ -180,10 +180,13 @@ class Editor extends Component {
     this.undoTimestamp = 0 // Reset timestamp
   }
 
-  componentWillReceiveProps({ code }) {
+  componentWillReceiveProps({ code, staticCode }) {
     if (code !== this.props.code) {
       const html = prism(normalizeCode(code))
       this.setState({ html })
+    }
+    if (staticCode !== this.props.staticCode) {
+      const staticCode = prism(normalizeCode(staticCode))
     }
   }
 
@@ -195,22 +198,39 @@ class Editor extends Component {
   }
 
   render() {
-    const { contentEditable, className, style, ...rest } = this.props
+    const { contentEditable, className, style, staticCode, ...rest } = this.props
     const { html } = this.state
     delete rest.code
 
     return (
       <pre
         {...rest}
-        ref={this.onRef}
         className={cn('prism-code', className)}
         style={style}
-        contentEditable={contentEditable}
         onKeyDown={contentEditable && this.onKeyDown}
         onKeyUp={contentEditable && this.onKeyUp}
         onClick={contentEditable && this.onClick}
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
+      >
+        {staticCode &&
+          <div
+            id="static"
+            dangerouslySetInnerHTML={{ __html: prism(normalizeCode(staticCode)) }}
+            style={{
+              cursor: 'not-allowed',
+              paddingBottom: '.5em',
+              marginBottom: '0.75em',
+              borderBottom: '2px solid #3f3F43',
+              userSelect: 'none'
+            }}
+          />
+        }
+        <div
+          id="editable"
+          ref={this.onRef}
+          dangerouslySetInnerHTML={{ __html: html }}
+          contentEditable={contentEditable}
+        />
+      </pre>
     )
   }
 }
